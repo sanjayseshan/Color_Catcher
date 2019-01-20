@@ -21,9 +21,10 @@ loc = 'green:(0,0)'
 enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robot Wins":"Gul Robot Vinder", "Red Robot Wins":"Rød Robot Vinder","Orange Robot Wins":"Orange Robot Vinder"}
 enToEs = {"bkg-en.png":"bkg-es.png", "Game Over":"Partido Completado", "Yellow Robot Wins":"Robot Armarillo Gana", "Red Robot Wins":"Robot Rojo Gana","Orange Robot Wins":"Robot Naranja Gana"}
 
-possibleCols = ["red","blue","green","yellow","black"]
+possibleCols = ["red","blue","green","yellow","black","orange"]
+drawcolors = {"red":'"rgb(255,0,0)"',"blue":'"rgb(0,0,255)"',"green":'"rgb(0,255,0)"',"yellow":'"rgb(252,233,79)"',"black":'"rgb(0,0,0)"',"orange":'"rgb(255,143,0)"'}
 
-bkgPic = "bkg-en.png"
+bkgPic = "bkg-en.png"
 gameOver = "Game Over"
 yelWon = "Yellow Robot Wins"
 redWon = "Red Robot Wins"
@@ -44,6 +45,7 @@ need_reset = 0
 
 touchx = 0
 touchy = 0
+
 
 def newTarget(lastTarget):
         targetL = possibleCols[random.randint(0,len(possibleCols)-1)]

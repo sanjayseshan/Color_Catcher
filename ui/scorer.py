@@ -22,6 +22,7 @@ enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robo
 enToEs = {"bkg-en.png":"bkg-es.png", "Game Over":"Partido Completado", "Yellow Robot Wins":"Robot Armarillo Gana", "Red Robot Wins":"Robot Rojo Gana","Orange Robot Wins":"Robot Naranja Gana"}
 
 possibleCols = ["red","blue","green","yellow","black","orange"]
+drawcolors = {"red":'"rgb(255,0,0)"',"blue":'"rgb(0,0,255)"',"green":'"rgb(0,255,0)"',"yellow":"yellow","black":'"rgb(0,0,0)"',"orange":'"rgb(255,103,0)"'}
 
 bkgPic = "bkg-en.png"
 gameOver = "Game Over"
@@ -44,6 +45,7 @@ need_reset = 0
 
 touchx = 0
 touchy = 0
+
 
 def newTarget(lastTarget):
         targetL = possibleCols[random.randint(0,len(possibleCols)-1)]
@@ -116,14 +118,14 @@ def updatedata(caller):
         os.system('convert -background white -fill black -size 16x16 -font Helvetica -pointsize 15 -gravity center label:"'+yel+'" -posterize 2 cmd3.png')
 #        os.system('convert -background white -fill black -size 16x16 -font Helvetica -pointsize 15 -gravity center label:"'+yel+'" -threshold 50 -morphology Thinning:-1 "LineEnds:-1;Peaks:1.5" -depth 1 cmd3.png')
 
-#        os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "color '+str(touchx/5)+','+str(touchy/5)+' point"  cmd.png ')
+#        os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+drawcolors[target]+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "color '+str(touchx/5)+','+str(touchy/5)+' point"  cmd.png ')
         if caller == "Reset1":
                 #os.system('cp cmd.png cmdtmp.png ; convert cmdtmp.png -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" cmd.png')
-                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
+                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+drawcolors[target]+' -stroke black -draw "rectangle 0,31 63,95" -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
         elif caller == "Language":
-                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
+                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+drawcolors[target]+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
         else:
-                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse1.png"  cmd.png ')
+                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+drawcolors[target]+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse1.png"  cmd.png ')
 
         if int(red) >= botmax or int(green) >= botmax or int(yel) >= botmax:
 	        print "GAME OVER"
