@@ -6,15 +6,10 @@ import ev3dev.ev3 as ev3
 from time import sleep
 
 
-ult1 = ev3.InfraredSensor(address='ev3-ports:in1')
-ult2 = ev3.InfraredSensor(address='ev3-ports:in2')
-ult3 = ev3.InfraredSensor(address='ev3-ports:in3')
-ult4 = ev3.InfraredSensor(address='ev3-ports:in4')
-
-ult1.mode = 'IR-PROX'
-ult2.mode = 'IR-PROX'
-ult3.mode = 'IR-PROX'
-ult4.mode = 'IR-PROX'
+ult1 = ev3.UltrasonicSensor(address='ev3-ports:in1')
+ult2 = ev3.UltrasonicSensor(address='ev3-ports:in2')
+ult3 = ev3.UltrasonicSensor(address='ev3-ports:in3')
+ult4 = ev3.UltrasonicSensor(address='ev3-ports:in4')
 
 HOST = "192.168.0." + str(int(socket.gethostbyname(socket.gethostname()).split('.')[3])-1)    # The remote host
 PORT = 50007              # The same port as used by the server
@@ -33,30 +28,30 @@ except:
 while True:
        try:
               while True:
-                     if ult1.value() < 10:
+                     if ult1.value() < 70:
                             dir = "F"
                             sendcmd(dir,s)
-                            while ult1.value() < 10:
+                            while ult1.value() < 70:
                                    continue
-                     elif ult2.value() < 10:
+                     elif ult2.value() < 70:
                             dir = "R"
                             sendcmd(dir,s)
-                            while ult2.value() < 10:
+                            while ult2.value() < 70:
                                    continue
-                     elif ult3.value() < 10:
+                     elif ult3.value() < 70:
                             dir = "B"
                             sendcmd(dir,s)
-                            while ult3.value() < 10:
+                            while ult3.value() < 70:
                                    continue
-                     elif ult4.value() < 10:
+                     elif ult4.value() < 70:
                             dir = "L"
                             sendcmd(dir,s)
-                            while ult4.value() < 10:
+                            while ult4.value() < 70:
                                    continue
                      else:
                             dir = "S"
                             sendcmd(dir,s)
-                            while ult1.value() > 10 and ult2.value() > 10 and ult3.value() > 10 and ult4.value() > 10:
+                            while ult1.value() > 70 and ult2.value() > 70 and ult3.value() > 70 and ult4.value() > 70:
                                    continue
                      print(dir)
        except Exception as e:

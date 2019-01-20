@@ -16,9 +16,9 @@ cc_sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 score = 0
 findCol = "green"
 
-colToInt = ["none","black","blue","green","yellow","red","white","brown"]
+colToInt = ["none","black","blue","green","yellow","red","white","brown","orange"]
 
-colIntToDeg = [0,240,180,60,120,300,0,0]
+colIntToDeg = [0,240,180,60,120,300,0,0,0]
 
 
 print("INIT")

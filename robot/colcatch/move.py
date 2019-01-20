@@ -5,55 +5,6 @@ import socket,time,os,struct,threading
 import ev3dev.ev3 as ev3
 from time import sleep
 
-"""
-
-import array
-import fcntl
-import sys
-
-# from linux/input.h
-
-KEY_UP = 103
-KEY_DOWN = 108
-KEY_LEFT = 105
-KEY_RIGHT = 106
-KEY_ENTER = 28
-KEY_BACKSPACE = 14
-
-KEY_MAX = 0x2ff
-
-def EVIOCGKEY(length):
-    return 2 << (14+8+8) | length << (8+8) | ord('E') << 8 | 0x18
-
-# end of stuff from linux/input.h
-
-BUF_LEN = 97
-
-def test_bit(bit, bytes):
-    # bit in bytes is 1 when released and 0 when pressed
-    return bool(bytes[bit / 8] & (1 << (bit % 8)))
-
-
-def main():
-    buf = array.array('B', [0] * BUF_LEN)
-    with open('/dev/input/by-path/platform-gpio_keys-event', 'r') as fd:
-        ret = fcntl.ioctl(fd, EVIOCGKEY(len(buf)), buf)
-
-    if ret < 0:
-        print("ioctl error", ret)
-        sys.exit(1)
-
-    for key in ['UP', 'DOWN', 'LEFT', 'RIGHT', 'ENTER', 'BACKSPACE']:
-        key_code = globals()['KEY_' + key]
-        key_state = test_bit(key_code, buf) and "pressed" or "released"
-        print('%9s : %s' % (key, key_state))
-
-while True:
-    main()
-
-"""
-
-
 #sleep(1000)
 
 B = ev3.LargeMotor('outB')
@@ -68,11 +19,11 @@ cc_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 cc_sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
 score = 0
-findCol = "green"
+findCol = "black"
 
-colBuf = 15
+colBuf = 10
 
-colToInt = ["none","black","blue","green","yellow","red","white","brown"]
+colToInt = ["none","black","blue","green","yellow","red","white","brown","orange"]
 
 print("CALIBRATE")
 
@@ -105,7 +56,12 @@ input("Press Enter to continue...")
 print("R, G, B:", cs1.red, cs1.green, cs1.blue)
 green = [range(cs1.red-colBuf,cs1.red+colBuf), range(cs1.green-colBuf,cs1.green+colBuf), range(cs1.blue-colBuf,cs1.blue+colBuf)]
 
-intToRange = [0,black,blue,green,yellow,red,0,0]
+print("PLACE ON ORANGE")
+input("Press Enter to continue...")
+print("R, G, B:", cs1.red, cs1.green, cs1.blue)
+orange = [range(cs1.red-colBuf,cs1.red+colBuf), range(cs1.green-colBuf,cs1.green+colBuf), range(cs1.blue-colBuf,cs1.blue+colBuf)]
+
+intToRange = [0,black,blue,green,yellow,red,0,0,orange]
 
 
 
@@ -246,13 +202,13 @@ Server.sendscore(0)
 pac_count = 0
 while True:
  try:
-     print("Val: "+str(cs1.value())+" ; Find: "+str(findCol)+" R: "+str(cs1.red)+" G: "+str(cs1.green)+" B: "+str(cs1.blue))
+     print("Find: "+str(findCol)+" R: "+str(cs1.red)+" G: "+str(cs1.green)+" B: "+str(cs1.blue))
      
 #     if cs1.value() == colToInt.index(findCol):
      if cs1.red in intToRange[colToInt.index(findCol)][0] and cs1.green in intToRange[colToInt.index(findCol)][1] and cs1.blue in intToRange[colToInt.index(findCol)][2]:
          pac_count += 1
          sleep(.02)
-         print("saw the color")
+         print("saw the color "+str(findCol))
          ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.RED)
          ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.RED)
              

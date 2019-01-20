@@ -21,7 +21,7 @@ loc = 'green:(0,0)'
 enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robot Wins":"Gul Robot Vinder", "Red Robot Wins":"Rød Robot Vinder","Orange Robot Wins":"Orange Robot Vinder"}
 enToEs = {"bkg-en.png":"bkg-es.png", "Game Over":"Partido Completado", "Yellow Robot Wins":"Robot Armarillo Gana", "Red Robot Wins":"Robot Rojo Gana","Orange Robot Wins":"Robot Naranja Gana"}
 
-possibleCols = ["red","blue","green","yellow","black"]
+possibleCols = ["red","blue","green","yellow","black","orange"]
 
 bkgPic = "bkg-en.png"
 gameOver = "Game Over"

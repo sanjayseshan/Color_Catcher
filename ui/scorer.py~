@@ -128,7 +128,8 @@ def updatedata(caller):
         if int(red) >= botmax or int(green) >= botmax or int(yel) >= botmax:
 	        print "GAME OVER"
                 need_reset = 1
-	        os.system('echo seshan | sudo -S aplay win.wav &')
+                if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner":
+	                os.system('echo seshan | sudo -S aplay win.wav &')
 	        os.system('cp cmd.png cmdtmp.png')
 	        if int(red) >= botmax :
 		        os.system('convert cmdtmp.png -draw "rectangle 0,0 160,70" -font Helvetica -weight 700  -pointsize 15 -undercolor black -draw "gravity center fill white text 0,0 \''+gameOver+'\n'+redWon+'\' " cmd.png')
