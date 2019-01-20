@@ -13,7 +13,7 @@ print(device)
 
 locations = {"none": (0,0), "black": (0,0), "blue" : (0,3),"green": (0,0),"yellow": (4,1),"red": (0,0),"white": (0,0), "brown": (0,0)}
 set = [0]*6
-scores = {"red":0, "green":0, "yellow":0}
+scores = {"red":0, "green":0, "yellow":0, "Reset":-1, "main":-1}
 loc = 'green:(0,0)'
 
 enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robot Wins":"Gul Robot Vinder", "Red Robot Wins":"Rod Robot Vinder","Orange Robot Wins":"Orange Robot Vinder"}
@@ -21,11 +21,11 @@ enToEs = {"bkg-en.png":"bkg-es.png", "Game Over":"Partido Completado", "Yellow R
 
 possibleCols = ["red","blue","green","yellow","black"]
 
-bkgPic = enToDa["bkg-en.png"]
-gameOver = enToDa["Game Over"]
-yelWon = enToDa["Yellow Robot Wins"]
-redWon = enToDa["Red Robot Wins"]
-greenWon = enToDa["Orange Robot Wins"]
+bkgPic = "bkg-en.png"
+gameOver = "Game Over"
+yelWon = "Yellow Robot Wins"
+redWon = "Red Robot Wins"
+greenWon = "Orange Robot Wins"
 
 target = possibleCols[0]
 
@@ -39,6 +39,9 @@ greenold = 0
 
 reset = 0
 need_reset = 0
+
+touchx = 0
+touchy = 0
 
 def newTarget(lastTarget):
         targetL = possibleCols[random.randint(0,len(possibleCols)-1)]
@@ -73,15 +76,18 @@ def broadcast(data):
 
 def updatedata(caller):
         global yelold,redold,greenold,need_reset,target,bkgPic,gameOver,yelWon,redWon,greenWon
-        if caller != "Language":
-                target = newTarget(target)
-        broadcast(target)
+
+        if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner":
+                if scores[caller] != 0:
+                        target = newTarget(target)
+                        broadcast(target)
         print(bkgPic)
         print "Called by " + caller
-	print "Locations: " + str(locations)
-	print "Pacman: " + str(scores["yellow"])
+#	print "Locations: " + str(locations)
+	print "Yellow: " + str(scores["yellow"])
 	print "Red: " + str(scores["red"])
 	print "Green: " + str(scores["green"])
+        print "Target: " + target
         print "Connected:"
 #        print connections
         for (s, id) in connections:
@@ -108,7 +114,14 @@ def updatedata(caller):
         os.system('convert -background white -fill black -size 16x16 -font Helvetica -pointsize 15 -gravity center label:"'+yel+'" -posterize 2 cmd3.png')
 #        os.system('convert -background white -fill black -size 16x16 -font Helvetica -pointsize 15 -gravity center label:"'+yel+'" -threshold 50 -morphology Thinning:-1 "LineEnds:-1;Peaks:1.5" -depth 1 cmd3.png')
 
-        os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" cmd.png ')
+#        os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "color '+str(touchx/5)+','+str(touchy/5)+' point"  cmd.png ')
+        if caller == "Reset1":
+                #os.system('cp cmd.png cmdtmp.png ; convert cmdtmp.png -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" cmd.png')
+                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
+        elif caller == "Language":
+                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
+        else:
+                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+target+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse1.png"  cmd.png ')
 
         if int(red) >= botmax or int(green) >= botmax or int(yel) >= botmax:
 	        print "GAME OVER"
@@ -122,9 +135,11 @@ def updatedata(caller):
 	        if int(yel) >= botmax :
 		        os.system('convert cmdtmp.png -draw "rectangle 0,0 160,70" -font Helvetica -weight 700  -pointsize 15 -undercolor black -draw "gravity center fill white text 0,0 \''+gameOver+'\n'+yelWon+'\' " cmd.png')
 
-                os.system('echo seshan | sudo -S killall fbi')
 
-                os.system('echo seshan | sudo -S fbi -d /dev/fb0 -T 3 -noverbose -a cmd.png &')
+                        
+#                os.system('echo seshan | sudo -S killall fbi')
+
+#                os.system('echo seshan | sudo -S fbi -d /dev/fb0 -T 3 -noverbose -a cmd.png &')
 
 #                for event in device.read_loop():
 #                        if event.type == evdev.ecodes.EV_KEY:
@@ -153,11 +168,11 @@ def updatedata(caller):
 class Reset(object):
    global reset
    def __init__(self):
-           print ("READING INPUT")
+           print ("READING TOUCHSCREEN\n\n")
 
    def watch(self):
            global yelold,redold,greenold,need_reset,target,bkgPic,gameOver,yelWon,redWon,greenWon
-           global reset,need_reset,locations
+           global reset,need_reset,locations,touchx,touchy
            btn_pressed = 0
            btn_processed = 0
            x = -1
@@ -166,7 +181,6 @@ class Reset(object):
            y_p = 0
 
            for event in device.read_loop():
-
 #                print(evdev.categorize(event))
                 if event.type == evdev.ecodes.EV_KEY:
                            if event.code == evdev.ecodes.BTN_TOUCH:
@@ -179,41 +193,35 @@ class Reset(object):
                                            print("PRESSED")
                     
                 if event.type == evdev.ecodes.EV_ABS:
-                        if event.code == evdev.ecodes.ABS_X:
+                        if event.code == evdev.ecodes.ABS_MT_POSITION_X:
                                 print("X: " + str(event.value))
                                 x = event.value
                                 if btn_pressed == 1:
                                         x_p = 1
-                        if event.code == evdev.ecodes.ABS_Y:
+                        if event.code == evdev.ecodes.ABS_MT_POSITION_Y:
                                 print("Y: " + str(event.value))            
                                 y = event.value
                                 if btn_pressed == 1:
                                         y_p = 1
 
-                        if x != -1 and y != -1 and btn_processed == 0:
+                        if x != -1 and y != -1 and btn_processed == 0 and btn_pressed == 1:
                                 btn_processed = 1
                                 print("X: " + str(x))
                                 print("Y: " + str(y))  
-#                                os.system('cp cmd.png cmd_tmp.png ; convert cmd_tmp.png -fill none -stroke blue -strokewidth 3 -draw "point '+str(x)+','+str(y)+'" cmda.png')
-#                                os.system('echo seshan | sudo -S killall fbi')
-#                                os.system('echo seshan | sudo -S fbi -d /dev/fb0 -T 3 -noverbose -a cmda.png > /dev/null 2>&1 &')
+                                touchx = x
+                                touchy = y
                                 if x > 390 and x < 620 and y > 360 and y < 450:
-                                        os.system('cp cmd.png cmd_tmp.png ; convert cmd_tmp.png -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" cmd.png')
-                                        os.system('echo seshan | sudo -S killall fbi')
-                                        os.system('echo seshan | sudo -S fbi -d /dev/fb0 -T 3 -noverbose -a cmd.png > /dev/null 2>&1 &')
                                         print "Reset Pressed"
                                         reset = 1
-                                        #             updatedata()
+                                        updatedata("Reset1")
                                         broadcast("RESET")
 	                                os.system('echo seshan | sudo -S aplay win.wav &')
                                         reset = 0
-                                        locations = {"none": (0,0), "black": (0,0), "blue" : (0,3),"green": (0,0),"yellow": (4,1),"red": (0,0),"white": (0,0), "brown": (0,0)}
                                         sleep(8)
-                                        locations = {"none": (0,0), "black": (0,0), "blue" : (0,3),"green": (0,0),"yellow": (4,1),"red": (0,0),"white": (0,0), "brown": (0,0)}
                                         need_reset = 0
                                         print "Reset Done"
                                         updatedata("Reset")
-                                if x > 710 and x < 800 and y > 410 and y < 480:
+                                elif x > 710 and x < 800 and y > 410 and y < 480:
                                         print("SWITCHING TO ENGLISH")
                                         bkgPic = "bkg-en.png"
                                         gameOver = "Game Over"
@@ -221,7 +229,7 @@ class Reset(object):
                                         redWon = "Red Robot Wins"
                                         greenWon = "Orange Robot Wins"
                                         updatedata("Language")
-                                if x > 710 and x < 800 and y > 330 and y < 410:
+                                elif x > 710 and x < 800 and y > 330 and y < 410:
                                         print("SWITCHING TO DANISH")
                                         bkgPic = enToDa["bkg-en.png"]
                                         gameOver = enToDa["Game Over"]
@@ -229,7 +237,7 @@ class Reset(object):
                                         redWon = enToDa["Red Robot Wins"]
                                         greenWon = enToDa["Orange Robot Wins"]
                                         updatedata("Language")
-                                if x > 710 and x < 800 and y > 275 and y < 330:
+                                elif x > 710 and x < 800 and y > 275 and y < 330:
                                         print("SWITCHING TO DANISH")
                                         bkgPic = enToEs["bkg-en.png"]
                                         gameOver = enToEs["Game Over"]
@@ -237,12 +245,14 @@ class Reset(object):
                                         redWon = enToEs["Red Robot Wins"]
                                         greenWon = enToEs["Orange Robot Wins"]
                                         updatedata("Language")
+                                else:
+                                        updatedata("Touch")
 
 class ThreadedServer(object):
     def __init__(self, host, port):
         self.host = host
         self.port = port
-	print "Active on port: " + str(port)
+	print "Active on port: " + str(port) + "\n"
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.host, self.port))
@@ -273,7 +283,7 @@ class ThreadedServer(object):
                 if data:
                     botid = data.split(';')[0]
                     score = data.split(';')[1]
-                    print("new connection req from: "+botid)
+                    print("new connection req from: " + botid + " score: " + score + "\n")
                     if botid == '192.168.0.4':
                       msgcolor = "green"
                     elif botid == '192.168.0.6':
@@ -285,9 +295,14 @@ class ThreadedServer(object):
                     if setmsgcolor:
                             setmsgcolor = 0
                             connections.append((client, "G"+msgcolor))
+                            send_str = str(str(target)).encode()
+                            send_msg = struct.pack('!I', len(send_str))
+                            send_msg += send_str
+                            client.sendall(send_msg)
+
                     scores[msgcolor] = int(score)
 #                   print str(locations) + ";" + str(scores["pacman"]) + ";" + str(scores["red"]) + ";" + str(scores["green"])
-		    updatedata("G"+msgcolor)
+		    updatedata(msgcolor)
                 else:
                     raise error('Tile disconnected')
             except Exception as e:
@@ -298,7 +313,7 @@ class ThreadedServer(object):
                         #filter(connections, lambda conn: conn[0] != client)
 #                        connections.remove((client, self.botcolor + " ghost"))
                 client.close()
-		updatedata("G"+msgcolor)
+		updatedata(msgcolor)
                 return False
 
 
@@ -312,8 +327,8 @@ Resetter = Reset()
 threading.Thread(target = Resetter.watch).start()
         
 if __name__ == "__main__":
-    tileServer = ThreadedServer('',5000)
-    threading.Thread(target = tileServer.listen).start()
+#    tileServer = ThreadedServer('',5000)
+#    threading.Thread(target = tileServer.listen).start()
     ThreadedServer('',6000).listen()
 
 
