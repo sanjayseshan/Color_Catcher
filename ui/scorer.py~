@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 # Echo server program
 import time
 import os
@@ -16,7 +18,7 @@ set = [0]*6
 scores = {"red":0, "green":0, "yellow":0, "Reset":-1, "main":-1}
 loc = 'green:(0,0)'
 
-enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robot Wins":"Gul Robot Vinder", "Red Robot Wins":"Rod Robot Vinder","Orange Robot Wins":"Orange Robot Vinder"}
+enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robot Wins":"Gul Robot Vinder", "Red Robot Wins":"Rød Robot Vinder","Orange Robot Wins":"Orange Robot Vinder"}
 enToEs = {"bkg-en.png":"bkg-es.png", "Game Over":"Partido Completado", "Yellow Robot Wins":"Robot Armarillo Gana", "Red Robot Wins":"Robot Rojo Gana","Orange Robot Wins":"Robot Naranja Gana"}
 
 possibleCols = ["red","blue","green","yellow","black"]
@@ -77,7 +79,7 @@ def broadcast(data):
 def updatedata(caller):
         global yelold,redold,greenold,need_reset,target,bkgPic,gameOver,yelWon,redWon,greenWon
 
-        if caller != "Language" and caller != "Reset1" and caller != "Touch":
+        if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner":
                 if scores[caller] != 0:
                         target = newTarget(target)
                         broadcast(target)
@@ -87,14 +89,15 @@ def updatedata(caller):
 	print "Yellow: " + str(scores["yellow"])
 	print "Red: " + str(scores["red"])
 	print "Green: " + str(scores["green"])
+        print "Target: " + target
         print "Connected:"
 #        print connections
         for (s, id) in connections:
                 print id
         print "\n"
 
-        if need_reset:
-                return
+#        if need_reset:
+#                return
         red = str(scores["red"])
         yel = str(scores["yellow"])
         green = str(scores["green"])
@@ -167,7 +170,7 @@ def updatedata(caller):
 class Reset(object):
    global reset
    def __init__(self):
-           print ("READING INPUT")
+           print ("READING TOUCHSCREEN\n\n")
 
    def watch(self):
            global yelold,redold,greenold,need_reset,target,bkgPic,gameOver,yelWon,redWon,greenWon
@@ -251,7 +254,7 @@ class ThreadedServer(object):
     def __init__(self, host, port):
         self.host = host
         self.port = port
-	print "Active on port: " + str(port)
+	print "Active on port: " + str(port) + "\n"
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.host, self.port))
@@ -282,7 +285,7 @@ class ThreadedServer(object):
                 if data:
                     botid = data.split(';')[0]
                     score = data.split(';')[1]
-                    print("new connection req from: "+botid)
+                    print("new connection req from: " + botid + " score: " + score + "\n")
                     if botid == '192.168.0.4':
                       msgcolor = "green"
                     elif botid == '192.168.0.6':
@@ -294,6 +297,11 @@ class ThreadedServer(object):
                     if setmsgcolor:
                             setmsgcolor = 0
                             connections.append((client, "G"+msgcolor))
+                            send_str = str(str(target)).encode()
+                            send_msg = struct.pack('!I', len(send_str))
+                            send_msg += send_str
+                            client.sendall(send_msg)
+
                     scores[msgcolor] = int(score)
 #                   print str(locations) + ";" + str(scores["pacman"]) + ";" + str(scores["red"]) + ";" + str(scores["green"])
 		    updatedata(msgcolor)
@@ -307,7 +315,7 @@ class ThreadedServer(object):
                         #filter(connections, lambda conn: conn[0] != client)
 #                        connections.remove((client, self.botcolor + " ghost"))
                 client.close()
-		updatedata("G"+msgcolor)
+		updatedata(msgcolor)
                 return False
 
 
@@ -321,8 +329,8 @@ Resetter = Reset()
 threading.Thread(target = Resetter.watch).start()
         
 if __name__ == "__main__":
-    tileServer = ThreadedServer('',5000)
-    threading.Thread(target = tileServer.listen).start()
+#    tileServer = ThreadedServer('',5000)
+#    threading.Thread(target = tileServer.listen).start()
     ThreadedServer('',6000).listen()
 
 

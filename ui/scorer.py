@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 # Echo server program
 import time
 import os
@@ -16,7 +18,7 @@ set = [0]*6
 scores = {"red":0, "green":0, "yellow":0, "Reset":-1, "main":-1}
 loc = 'green:(0,0)'
 
-enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robot Wins":"Gul Robot Vinder", "Red Robot Wins":"Rod Robot Vinder","Orange Robot Wins":"Orange Robot Vinder"}
+enToDa = {"bkg-en.png":"bkg-da.png", "Game Over":"Spillet er slut", "Yellow Robot Wins":"Gul Robot Vinder", "Red Robot Wins":"Rød Robot Vinder","Orange Robot Wins":"Orange Robot Vinder"}
 enToEs = {"bkg-en.png":"bkg-es.png", "Game Over":"Partido Completado", "Yellow Robot Wins":"Robot Armarillo Gana", "Red Robot Wins":"Robot Rojo Gana","Orange Robot Wins":"Robot Naranja Gana"}
 
 possibleCols = ["red","blue","green","yellow","black"]
@@ -94,8 +96,8 @@ def updatedata(caller):
                 print id
         print "\n"
 
-        if need_reset:
-                return
+#        if need_reset:
+#                return
         red = str(scores["red"])
         yel = str(scores["yellow"])
         green = str(scores["green"])
@@ -126,7 +128,8 @@ def updatedata(caller):
         if int(red) >= botmax or int(green) >= botmax or int(yel) >= botmax:
 	        print "GAME OVER"
                 need_reset = 1
-	        os.system('echo seshan | sudo -S aplay win.wav &')
+                if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner":
+	                os.system('echo seshan | sudo -S aplay win.wav &')
 	        os.system('cp cmd.png cmdtmp.png')
 	        if int(red) >= botmax :
 		        os.system('convert cmdtmp.png -draw "rectangle 0,0 160,70" -font Helvetica -weight 700  -pointsize 15 -undercolor black -draw "gravity center fill white text 0,0 \''+gameOver+'\n'+redWon+'\' " cmd.png')
