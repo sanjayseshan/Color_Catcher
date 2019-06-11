@@ -9,6 +9,7 @@ import struct
 import evdev
 from time import sleep
 import random
+import sys
 
 device = evdev.InputDevice('/dev/input/event0')
 print(device)
@@ -81,7 +82,7 @@ def broadcast(data):
 def updatedata(caller):
         global yelold,redold,greenold,need_reset,target,bkgPic,gameOver,yelWon,redWon,greenWon
 
-        if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner":
+        if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner" and caller != "Exit":
                 if scores[caller] != 0:
                         target = newTarget(target)
                         broadcast(target)
@@ -122,6 +123,9 @@ def updatedata(caller):
         if caller == "Reset1":
                 #os.system('cp cmd.png cmdtmp.png ; convert cmdtmp.png -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" cmd.png')
                 os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+drawcolors[target]+' -stroke black -draw "rectangle 0,31 63,95" -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
+        if caller == "Exit":
+                #os.system('cp cmd.png cmdtmp.png ; convert cmdtmp.png -fill none -stroke blue -strokewidth 3 -draw "rectangle 77,70 124,90" cmd.png')
+                os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+drawcolors[target]+' -stroke black -draw "rectangle 0,31 63,95" -fill none -stroke blue -strokewidth 3 -draw "rectangle 13,0 159,143" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
         elif caller == "Language":
                 os.system('convert -size 160x96 xc:black -fill red -draw "image over  0,0 0,0 \''+bkgPic+'\'"  -draw "image over  100,18 0,0 \'cmd1.png\'" -draw "image over  100,34 0,0 \'cmd2.png\'" -draw "image over  100,50 0,0 \'cmd3.png\'" -fill '+drawcolors[target]+' -stroke black -draw "rectangle 0,31 63,95" -fill black -draw "image over '+str(touchx/5)+','+str(touchy/5)+' 0,0 mouse2.png"  cmd.png ')
         else:
@@ -130,7 +134,7 @@ def updatedata(caller):
         if int(red) >= botmax or int(green) >= botmax or int(yel) >= botmax:
 	        print "GAME OVER"
                 need_reset = 1
-                if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner":
+                if caller != "Language" and caller != "Reset1" and caller != "Touch" and caller != "spinner" and caller != "Exit":
 	                os.system('echo seshan | sudo -S aplay win.wav &')
 	        os.system('cp cmd.png cmdtmp.png')
 	        if int(red) >= botmax :
@@ -243,13 +247,18 @@ class Reset(object):
                                         greenWon = enToDa["Orange Robot Wins"]
                                         updatedata("Language")
                                 elif x > 710 and x < 800 and y > 275 and y < 330:
-                                        print("SWITCHING TO DANISH")
+                                        print("SWITCHING TO SPANISH")
                                         bkgPic = enToEs["bkg-en.png"]
                                         gameOver = enToEs["Game Over"]
                                         yelWon = enToEs["Yellow Robot Wins"]
                                         redWon = enToEs["Red Robot Wins"]
                                         greenWon = enToEs["Orange Robot Wins"]
                                         updatedata("Language")
+                                elif x > 720 and x < 800 and y > 0 and y < 65:
+                                        print("Ending Color Catcher")
+                                        updatedata("Exit")
+                                        os.system('echo seshan | sudo -S killall fbi ; sudo service lightdm restart')
+                                        sys.exit()
                                 else:
                                         updatedata("Touch")
 
